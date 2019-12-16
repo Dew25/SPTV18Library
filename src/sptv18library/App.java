@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import provider.ProviderBook;
+import provider.ProviderHistory;
+import provider.ProviderReader;
 
 /**
  *
@@ -21,6 +24,11 @@ public class App {
     List<Book> books = new ArrayList<>();
     List<Reader> readers = new ArrayList<>();
     List<History> histories = new ArrayList<>();
+    SaverToFile saverToFile;
+    public App() {
+        saverToFile = new SaverToFile();
+        books.addAll(saverToFile.loadBooks());
+    }
     
     public void run(){
         System.out.println("--- Учебная библиотека группы SPTV18 ---");
@@ -32,62 +40,33 @@ public class App {
             System.out.println("2. Добавить нового читателя");
             System.out.println("3. Выдать книгу читателю");
             System.out.println("4. Вернуть книгу в библиотеку");
+            System.out.println("5. Список книг библиотеки");
+            System.out.println("6. Список читателей библиотеки");
             System.out.println("Выбери номер задачи: ");
             Scanner scanner = new Scanner(System.in);
-            int task = scanner.nextInt();scanner.nextLine();
+            int task = scanner.nextInt(); scanner.nextLine();
             switch (task) {
                 case 0:
                     System.out.println("Программа закрывается");
                     repeat=false;
                     break;
                 case 1:
-                    Book book = new Book();
-                    System.out.println("Название книги:");
-                    String title = scanner.nextLine();
-                    book.setTitle(title);
-                    System.out.println("Автор книги:");
-                    String author = scanner.nextLine();
-                    book.setAuthor(author);
-                    System.out.println("Год издания книги:");
-                    int publishedYear = scanner.nextInt();scanner.nextLine();
-                    book.setPublishedYear(publishedYear);
+                    ProviderBook providerBook = new ProviderBook();
+                    Book book=providerBook.createBook();
                     books.add(book);
+                    saverToFile.saveBooks(books);
                     System.out.println("Книга инициирована: "+book.toString());
                     break;
                 case 2:
-                    Reader reader = new Reader();
-                    System.out.println("Имя читателя:");
-                    String firstname = scanner.nextLine();
-                    reader.setFirstname(firstname);
-                    System.out.println("Фамилия читателя:");
-                    String lastname = scanner.nextLine();
-                    reader.setLastname(lastname);
-                    System.out.println("Телефон:");
-                    String phone = scanner.nextLine();
-                    reader.setPhone(phone);
+                    ProviderReader providerReader = new ProviderReader();
+                    Reader reader = providerReader.createReader();
                     readers.add(reader);
                     System.out.println("Инициирован новый читатель.");
                     System.out.println(reader.toString());
                     break;
                 case 3:
-                    History history = new History();
-                    System.out.println("Список книг:");
-                    for (int i = 0; i < books.size(); i++) {
-                        book = books.get(i);
-                        System.out.println(i+1+". "+book.toString());
-                    }
-                    System.out.println("Выберите номер книги:");
-                    int numBooks = scanner.nextInt();
-                    history.setBook(books.get(numBooks-1));
-                     System.out.println("Список читателей:");
-                    for (int i = 0; i < readers.size(); i++) {
-                        reader = readers.get(i);
-                        System.out.println(i+1+". "+reader.toString());
-                    }
-                    System.out.println("Выберите номер читателя:");
-                    int numReader = scanner.nextInt();
-                    history.setReader(readers.get(numReader-1));
-                    history.setGiveOutBook(new Date());
+                    ProviderHistory providerHistory = new ProviderHistory();
+                    History history = providerHistory.createHistory(books, readers);
                     histories.add(history);
                     System.out.println("Книга выдана");
                     System.out.println(history.toString());
@@ -102,6 +81,20 @@ public class App {
                     histories.get(numHistory-1).setReturnBook(new Date());
                     System.out.println("Книга возвращена. ");
                     System.out.println(histories.get(numHistory-1).toString());
+                case 5:
+                    System.out.println("Список книг:");
+                    for (int i = 0; i < books.size(); i++) {
+                        book = books.get(i);
+                        System.out.println(i + 1 + ". " + book.toString());
+                    }
+                    break;
+                case 6:
+                    System.out.println("Список читателей:");
+                    for (int i = 0; i < readers.size(); i++) {
+                        reader = readers.get(i);
+                        System.out.println(i + 1 + ". " + reader.toString());
+                    }
+                    break;    
             }
         }while(repeat);
     }
