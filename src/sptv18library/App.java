@@ -28,11 +28,14 @@ public class App {
     public App() {
         saverToFile = new SaverToFile();
         books.addAll(saverToFile.loadBooks());
+        readers.addAll(saverToFile.loadReaders());
+        histories.addAll(saverToFile.loadHistories());
     }
     
     public void run(){
         System.out.println("--- Учебная библиотека группы SPTV18 ---");
         boolean repeat = true;
+        Tools tools = new Tools();
         do{
             System.out.println("Список задач:");
             System.out.println("0. Выйти из программы");
@@ -42,6 +45,7 @@ public class App {
             System.out.println("4. Вернуть книгу в библиотеку");
             System.out.println("5. Список книг библиотеки");
             System.out.println("6. Список читателей библиотеки");
+            System.out.println("7. Список выданных книг");
             System.out.println("Выбери номер задачи: ");
             Scanner scanner = new Scanner(System.in);
             int task = scanner.nextInt(); scanner.nextLine();
@@ -61,6 +65,7 @@ public class App {
                     ProviderReader providerReader = new ProviderReader();
                     Reader reader = providerReader.createReader();
                     readers.add(reader);
+                    saverToFile.saveReaders(readers);
                     System.out.println("Инициирован новый читатель.");
                     System.out.println(reader.toString());
                     break;
@@ -68,6 +73,7 @@ public class App {
                     ProviderHistory providerHistory = new ProviderHistory();
                     History history = providerHistory.createHistory(books, readers);
                     histories.add(history);
+                    saverToFile.saveHistories(histories);
                     System.out.println("Книга выдана");
                     System.out.println(history.toString());
                     break;
@@ -79,14 +85,13 @@ public class App {
                     System.out.println("Выберите какую книгу вернуть");
                     int numHistory = scanner.nextInt(); scanner.nextLine();
                     histories.get(numHistory-1).setReturnBook(new Date());
+                    saverToFile.saveHistories(histories);
                     System.out.println("Книга возвращена. ");
                     System.out.println(histories.get(numHistory-1).toString());
                 case 5:
                     System.out.println("Список книг:");
-                    for (int i = 0; i < books.size(); i++) {
-                        book = books.get(i);
-                        System.out.println(i + 1 + ". " + book.toString());
-                    }
+                    tools.printListBooks(books);
+                    saverToFile.saveBooks(books);
                     break;
                 case 6:
                     System.out.println("Список читателей:");
@@ -94,7 +99,12 @@ public class App {
                         reader = readers.get(i);
                         System.out.println(i + 1 + ". " + reader.toString());
                     }
-                    break;    
+                    break; 
+                case 7:
+                    System.out.println("Список выданных книг:");
+                    
+                    tools.printTakedOnBooks(histories);
+                    break;
             }
         }while(repeat);
     }
