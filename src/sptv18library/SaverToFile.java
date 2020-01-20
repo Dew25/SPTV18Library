@@ -8,6 +8,7 @@ package sptv18library;
 import entity.Book;
 import entity.History;
 import entity.Reader;
+import interfaces.Saveble;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -23,7 +24,7 @@ import java.util.logging.Logger;
  *
  * @author user
  */
-public class SaverToFile {
+public class SaverToFile implements Saveble{
     public void saveBooks(List<Book>books){
         FileOutputStream fileOutputStream = null;
         ObjectOutputStream objectOutputStream = null;
